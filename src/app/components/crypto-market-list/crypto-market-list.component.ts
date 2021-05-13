@@ -1,80 +1,69 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Input, OnInit, ViewChild } from '@angular/core';
 import {MatPaginator} from '@angular/material/paginator'
 import {MatSort} from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { CryptoMarketService } from '../shared/cryptomarket.service';
+import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
+import {merge, Observable,of as ObservableOf} from 'rxjs';
+import {catchError,map,startWith,switchMap} from 'rxjs/operators';
+import { CryptoMarketService, ImarketDataApi, Imarketlistdata } from '../shared/cryptomarket.service';
 
-export interface Imarketlistdata {
-  rank:string;
-  currency:string;
-  pair:string;
-  volume:string
-
-}
 
 @Component({
   selector: 'crypto-market-list',
   templateUrl: './crypto-market-list.component.html',
   styleUrls: ['./crypto-market-list.component.scss']
 })
-export class CryptoMarketListComponent implements OnInit {
+export class CryptoMarketListComponent implements AfterViewInit {
+
+  displayedColumns:string[] = ['currency','symbol','price'];
+  @Input() dataSource!:MatTableDataSource<Imarketlistdata[]>;
+  marketData!:Observable<any>;
 
 
-  @ViewChild(MatPaginator) paginator:MatPaginator|undefined;
-  @ViewChild(MatPaginator) sort:MatSort|undefined;
-
-  displayedColumns:string[] = ['rank','currency','pair','price'];
-  dataSource!: MatTableDataSource<Imarketlistdata>;
-  status:any;
+  @ViewChild(MatPaginator) paginator!:MatPaginator;
+  @ViewChild(MatPaginator) sort!:MatSort;
 
 
-  constructor(private cryptoMarketService:CryptoMarketService) {
 
 
-   }
 
-  ngOnInit(): void {
+  constructor(
+    private cryptoMarketService:CryptoMarketService,
+    private route:ActivatedRoute
+    ) {
 
-    this.marketListLatest();
+      this.dataSource = new MatTableDataSource(this.route.snapshot.data.marketList.data);
 
-  }
+       }
 
-  // ngAfterViewInit() {
-  //   this.dataSource.paginator = this.paginator;
-  //   this.dataSource.sort = this.sort;
-  // }
+       ngOnInit(){
+         console.log(this.dataSource)
+       }
 
 
-  marketListLatest(){
-    this.cryptoMarketService.marketListLatest().subscribe(
-      res=>{
-        //const data =  Array.from()
-        this.dataSource =  new MatTableDataSource(res.data);
-        console.log(this.dataSource);
-      },
-      err=>{
+
+
+
+       ngAfterViewInit() {
+
+         this.dataSource.paginator = this.paginator;
+         this.dataSource.sort = this.sort;
 
       }
-    )
+
+      applyFilter(event: Event) {
+        const filterValue = (event.target as HTMLInputElement).value;
+        this.dataSource.filter = filterValue.trim().toLowerCase();
+
+        if (this.dataSource.paginator) {
+          this.dataSource.paginator.firstPage();
+        }
+      }
+
+
+
+
+
+
 
   }
-
-
-
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
-  }
-
-
-
-
-
-
-
-
-}

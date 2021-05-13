@@ -4,6 +4,20 @@ import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 
+export interface ImarketDataApi {
+ status:{},
+ data:Imarketlistdata[]
+
+}
+
+export interface Imarketlistdata {
+  rank:string;
+  currency:string;
+  pair:string;
+  volume:string
+}
+
+
 @Injectable({
   providedIn:'root'
 })
@@ -13,8 +27,8 @@ export class CryptoMarketService {
   constructor(private http:HttpClient){}
 
 
-  marketListLatest():Observable<any>{
-    return this.http.get(environment.baseUrl+'market/list');
+  marketListLatest():Observable<ImarketDataApi>{
+    return this.http.get<ImarketDataApi>(environment.baseUrl+'market/list');
 
   }
 
