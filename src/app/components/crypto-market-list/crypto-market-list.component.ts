@@ -3,8 +3,6 @@ import {MatPaginator} from '@angular/material/paginator'
 import {MatSort} from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
-import {merge, Observable,of as ObservableOf} from 'rxjs';
-import {catchError,map,startWith,switchMap} from 'rxjs/operators';
 import { CryptoMarketService, ImarketDataApi, Imarketlistdata } from '../shared/cryptomarket.service';
 
 
@@ -16,15 +14,11 @@ import { CryptoMarketService, ImarketDataApi, Imarketlistdata } from '../shared/
 export class CryptoMarketListComponent implements AfterViewInit {
 
   displayedColumns:string[] = ['currency','symbol','price'];
-  @Input() dataSource!:MatTableDataSource<Imarketlistdata[]>;
-  marketData!:Observable<any>;
+  dataSource:MatTableDataSource<any>;
 
 
   @ViewChild(MatPaginator) paginator!:MatPaginator;
   @ViewChild(MatPaginator) sort!:MatSort;
-
-
-
 
 
   constructor(
@@ -33,23 +27,17 @@ export class CryptoMarketListComponent implements AfterViewInit {
     ) {
 
       this.dataSource = new MatTableDataSource(this.route.snapshot.data.marketList.data);
+    }
 
-       }
-
-       ngOnInit(){
-         console.log(this.dataSource)
-       }
+    ngOnInit(){}
 
 
-
-
-
-       ngAfterViewInit() {
-
-         this.dataSource.paginator = this.paginator;
-         this.dataSource.sort = this.sort;
+    ngAfterViewInit() {
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
 
       }
+
 
       applyFilter(event: Event) {
         const filterValue = (event.target as HTMLInputElement).value;

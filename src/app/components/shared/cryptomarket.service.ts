@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import  { HttpClient} from '@angular/common/http';
+import  { HttpClient, HttpHeaders} from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { catchError, map } from 'rxjs/operators';
 
 
 export interface ImarketDataApi {
@@ -11,10 +12,10 @@ export interface ImarketDataApi {
 }
 
 export interface Imarketlistdata {
-  rank:string;
-  currency:string;
-  pair:string;
-  volume:string
+  name:string;
+  symbol:string;
+  price:number;
+
 }
 
 
@@ -27,8 +28,9 @@ export class CryptoMarketService {
   constructor(private http:HttpClient){}
 
 
-  marketListLatest():Observable<ImarketDataApi>{
-    return this.http.get<ImarketDataApi>(environment.baseUrl+'market/list');
+   marketListLatest():Observable<ImarketDataApi>{
+    const reqHeader = new HttpHeaders({ 'Content-Type': 'application/json'});
+    return this.http.get<ImarketDataApi>(environment.baseUrl+'market/list',{headers:reqHeader});
 
   }
 
